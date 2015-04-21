@@ -1,6 +1,10 @@
 
 clear all; 
 
+% Define seed
+%load seed_list.mat;
+%rand('seed', seed_list(1));
+
 %% Create reservoir
 %scale inputs and teacher attributes
 nInputUnits = 1; nInternalUnits = 100; nOutputUnits = 1; 
@@ -22,7 +26,7 @@ for i = 1:nOutputUnits
     teacherShift(i,:) = -0.2;
 end
 
-%% Create reservoir with correct scaling
+%create reservoir with correct scaling
 esn = generate_esn(nInputUnits, nInternalUnits, nOutputUnits, ...
     'spectralRadius',0.8948,'inputScaling',inputScale,'inputShift',inputShift, ...
     'teacherScaling',teacherScaling,'teacherShift',teacherShift,'feedbackScaling', 0, ...
@@ -57,7 +61,7 @@ trainOutputSequence(1,:) = A*sawtooth(2*pi*10*t);
 %     %x = sawtooth(2*pi*10*t);
 % end
 
-%% Split training set
+% Split training set
 train_fraction = 0.5 ; % use 50% in training and 50% in testing
 [trainInputSequence,testInputSequence ] = ...
     split_train_test(trainInputSequence',train_fraction);
@@ -72,8 +76,9 @@ esn.internalWeights = esn.spectralRadius * esn.internalWeights_UnitSR;
 [trainedEsn, stateCollection] = ...
     train_esn(trainInputSequence, trainOutputSequence , esn, nForgetPoints);
 
-% Collect output from trained network 
+% Test trained network 
 predictedTrainOutput = test_esn(trainInputSequence, trainedEsn, nForgetPoints);
+
 
 % Print plots
 figure(1);
@@ -83,7 +88,7 @@ plot(trainOutputSequence(:,1), 'blue');
 plot(trainInputSequence(:,1),'red');
 plot(predictedTrainOutput(:,1),'black');
 
-% extra figures for multiple outputs
+% extra fi
 % figure(2);
 % title('cos');
 % hold on;
@@ -106,7 +111,7 @@ plot(predictedTrainOutput(:,1),'black');
 % plot(predictedTrainOutput(:,4),'black');
 
 
-%% Test on new test set
+% Test on new test set
 predictedTestOutput = test_esn(testInputSequence,  trainedEsn, nForgetPoints) ; 
 
 figure(2);
@@ -117,7 +122,7 @@ plot(trainInputSequence(:,1),'red');
 plot(predictedTestOutput(:,1),'black');
 
 
-%% Compute NRMSE error for both sets
+%%%%compute NRMSE testing error for both sets
  trainError = compute_NRMSE(predictedTrainOutput, trainOutputSequence); 
 disp(sprintf('train NRMSE = %s', num2str(trainError)))
 testError = compute_NRMSE(predictedTestOutput, testOutputSequence); 
