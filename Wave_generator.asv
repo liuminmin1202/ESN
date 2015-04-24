@@ -1,13 +1,9 @@
 
 clear all; 
-
-% Define seed
-%load seed_list.mat;
-%rand('seed', seed_list(1));
-
+rand('seed', 10);
 %% Create reservoir
 %scale inputs and teacher attributes
-nInputUnits = 1; nInternalUnits = 100; nOutputUnits = 1; 
+nInputUnits = 1; nInternalUnits = 50; nOutputUnits = 1; 
 numElectrodes = 2; 
 nForgetPoints = 100; % discard the first 100 points
 sequenceLength = 1000;
@@ -15,8 +11,8 @@ inputScale = zeros(nInputUnits,1);
 inputShift = zeros(nInputUnits,1);
 
 for i = 1:nInputUnits
-    inputScale(i,:) = 0.7206; 
-    inputShift(i,:) = 0.4697;% necessary to correlate input and prediction/target
+    inputScale(i,:) = 1; %0.3
+    inputShift(i,:) = 0;%-0.2 necessary to correlate input and prediction/target
 end
 
 teacherScaling = zeros(nOutputUnits,1); teacherShift = zeros(nOutputUnits,1);
@@ -26,9 +22,9 @@ for i = 1:nOutputUnits
     teacherShift(i,:) = -0.2;
 end
 
-%create reservoir with correct scaling
+%% Create reservoir with correct scaling - best specrad 0.8948
 esn = generate_esn(nInputUnits, nInternalUnits, nOutputUnits, ...
-    'spectralRadius',0.8948,'inputScaling',inputScale,'inputShift',inputShift, ...
+    'spectralRadius',0.7,'inputScaling',inputScale,'inputShift',inputShift, ...
     'teacherScaling',teacherScaling,'teacherShift',teacherShift,'feedbackScaling', 0, ...
     'type', 'plain_esn');
 
@@ -61,7 +57,7 @@ trainOutputSequence(1,:) = A*sawtooth(2*pi*10*t);
 %     %x = sawtooth(2*pi*10*t);
 % end
 
-% Split training set
+%% Split training set
 train_fraction = 0.5 ; % use 50% in training and 50% in testing
 [trainInputSequence,testInputSequence ] = ...
     split_train_test(trainInputSequence',train_fraction);
@@ -76,9 +72,8 @@ esn.internalWeights = esn.spectralRadius * esn.internalWeights_UnitSR;
 [trainedEsn, stateCollection] = ...
     train_esn(trainInputSequence, trainOutputSequence , esn, nForgetPoints);
 
-% Test trained network 
+% Collect output from trained network 
 predictedTrainOutput = test_esn(trainInputSequence, trainedEsn, nForgetPoints);
-
 
 % Print plots
 figure(1);
@@ -88,7 +83,7 @@ plot(trainOutputSequence(:,1), 'blue');
 plot(trainInputSequence(:,1),'red');
 plot(predictedTrainOutput(:,1),'black');
 
-% extra fi
+% extra figures for multiple outputs
 % figure(2);
 % title('cos');
 % hold on;
@@ -111,7 +106,7 @@ plot(predictedTrainOutput(:,1),'black');
 % plot(predictedTrainOutput(:,4),'black');
 
 
-% Test on new test set
+%% Test on new test set
 predictedTestOutput = test_esn(testInputSequence,  trainedEsn, nForgetPoints) ; 
 
 figure(2);
@@ -122,7 +117,7 @@ plot(trainInputSequence(:,1),'red');
 plot(predictedTestOutput(:,1),'black');
 
 
-%%%%compute NRMSE testing error for both sets
+%% Compute NRMSE error for both sets
  trainError = compute_NRMSE(predictedTrainOutput, trainOutputSequence); 
 disp(sprintf('train NRMSE = %s', num2str(trainError)))
 testError = compute_NRMSE(predictedTestOutput, testOutputSequence); 

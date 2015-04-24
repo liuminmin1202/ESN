@@ -1,9 +1,9 @@
 
 clear all; 
-
+rand('seed', 10);
 %% Create reservoir
 %scale inputs and teacher attributes
-nInputUnits = 1; nInternalUnits = 100; nOutputUnits = 1; 
+nInputUnits = 1; nInternalUnits = 50; nOutputUnits = 1; 
 numElectrodes = 2; 
 nForgetPoints = 100; % discard the first 100 points
 sequenceLength = 1000;
@@ -11,20 +11,20 @@ inputScale = zeros(nInputUnits,1);
 inputShift = zeros(nInputUnits,1);
 
 for i = 1:nInputUnits
-    inputScale(i,:) = 0.7206; 
-    inputShift(i,:) = 0.4697;% necessary to correlate input and prediction/target
+    inputScale(i,:) = 1; %0.3
+    inputShift(i,:) = 0;%-0.2 necessary to correlate input and prediction/target
 end
 
 teacherScaling = zeros(nOutputUnits,1); teacherShift = zeros(nOutputUnits,1);
 
 for i = 1:nOutputUnits
-    teacherScaling(i,:) = 0.3;
-    teacherShift(i,:) = -0.2;
+    teacherScaling(i,:) = 1;%0.3;
+    teacherShift(i,:) = 0;%-0.2;
 end
 
 %% Create reservoir with correct scaling - best specrad 0.8948
 esn = generate_esn(nInputUnits, nInternalUnits, nOutputUnits, ...
-    'spectralRadius',0.8948,'inputScaling',inputScale,'inputShift',inputShift, ...
+    'spectralRadius',1,'inputScaling',inputScale,'inputShift',inputShift, ...
     'teacherScaling',teacherScaling,'teacherShift',teacherShift,'feedbackScaling', 0, ...
     'type', 'plain_esn');
 
@@ -45,6 +45,7 @@ trainInputSequence(1,:)=A*sin(2*pi*10*t);
 
 % Desired output
 trainOutputSequence(1,:) = A*sawtooth(2*pi*10*t);
+%trainOutputSequence(1,:) = A*sin(2*pi*20*t);
 
 % Multiple outputs
 % len = 1;
