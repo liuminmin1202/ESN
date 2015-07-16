@@ -6,7 +6,7 @@ load('LC');
 load('pbma')
 %% Create reservoir
 %scale inputs and teacher attributes
-nInputUnits = 1; nInternalUnits = 15; nOutputUnits = 4; 
+nInputUnits = 1; nInternalUnits = 50; nOutputUnits = 4; 
 %numElectrodes = 2; 
 nForgetPoints = 100; % discard the first 100 points
 sequenceLength = 1000;
@@ -22,7 +22,7 @@ teacherScaling = zeros(nOutputUnits,1); teacherShift = zeros(nOutputUnits,1);
 
 for i = 1:nOutputUnits
     teacherScaling(i,:) = 0.3;%0.3;
-    teacherShift(i,:) = -0.2;%-0.2;
+    teacherShift(i,:) = 0;%-0.2;
 end
 
 %% Create reservoir with correct scaling - best specrad 0.8948
