@@ -33,7 +33,7 @@ function [hE,hV]=wgPlot(adjMat,coord,varargin)
 % Set default parameter values
 %--------------------
 h=gca; prh; hold on; axis off;
-axesArea(h,[6 7 5 5]);
+%axesArea(h,[6 7 5 5]);
 plotParm={'markerSize',6,'lineWidth',0.1,'marker','.','MarkerEdgeColor',[1,0.5,0.2]};
 siz=size(adjMat);
 vrtxSiz=100;
