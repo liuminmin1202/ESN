@@ -52,7 +52,7 @@ InputSequence(1,:)= A*sin(2*pi*10*t);
 % OutputSequence = LCs(1:Fs,:)';
 
 resistors = [pbma(1528:8195,:); pbma(1528:8195,:); pbma(1528:8195,:)];
-OutputSequence = pbmas(1:Fs,:)';
+OutputSequence = resistors(1:Fs,:)';
 % Multiple outputs
 
 % Split training set
